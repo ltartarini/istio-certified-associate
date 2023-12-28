@@ -149,28 +149,49 @@ helm repo update
 helm install istio-base istio/base -n istio-system --set defaultRevision=default --create-namespace
 ```
 
- 1. Install the Istio discovery chart (`istiod`):
+2. Install the Istio discovery chart (`istiod`):
 
 ```shell
 helm install istiod istio/istiod -n istio-system --wait
 ```
 
-1. (Optional) Install an ingress gateway:
+3. (Optional) Install an ingress gateway:
 
 ```shell
 kubectl create namespace istio-ingress
 helm install istio-ingress istio/gateway -n istio-ingress --wait
 ```
 
-### Istio Operator Install
+### Istio Operator install
 
 Ref: <https://istio.io/latest/docs/setup/install/operator/>
 
-### Customizing the installation configuration
+To install the Istio `demo` configuration profile using the operator:
 
-Ref: <https://istio.io/latest/docs/setup/additional-setup/customize-installation/>
+```shell
+kubectl apply -f - <<EOF
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: istio-system
+  name: example-istiocontrolplane
+spec:
+  profile: demo
+EOF
+```
 
-![Alt text](images/istio_components.png)
+To install `istiod` (control plane) in a different namespace than `istio-system`, specify the namespace using the `values.global.istioNamespace`:
+
+```yaml
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+...
+spec:
+  profile: demo
+  values:
+    global:
+      istioNamespace: istio-namespace1
+```
 
 ### Installing Gateways
 
@@ -179,3 +200,5 @@ Ref: <https://istio.io/latest/docs/setup/additional-setup/gateway/>
 ### Customizing the installation configuration
 
 Ref: <https://istio.io/latest/docs/setup/additional-setup/customize-installation/>
+
+![Alt text](images/istio_components.png)
