@@ -197,6 +197,38 @@ spec:
 
 Ref: <https://istio.io/latest/docs/setup/additional-setup/gateway/>
 
+Envoy proxies running at the edge of the mesh, providing fine-grained control over traffic entering and leaving the mesh.
+
+```yaml
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: ingress
+spec:
+  profile: empty # Do not install CRDs or the control plane
+  components:
+    ingressGateways:
+    - name: istio-ingressgateway
+      namespace: istio-ingress
+      enabled: true
+      label:
+        # Set a unique label for the gateway. This is required to ensure Gateways
+        # can select this workload
+        istio: ingressgateway
+  values:
+    gateways:
+      istio-ingressgateway:
+        # Enable gateway injection
+        injectionTemplate: gateway
+```
+
+Then install using standard istioctl commands:
+
+```shell
+kubectl create namespace istio-ingress
+istioctl install -f ingress.yaml
+```
+
 ### Customizing the installation configuration
 
 Ref: <https://istio.io/latest/docs/setup/additional-setup/customize-installation/>
